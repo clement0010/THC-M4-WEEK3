@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <style>
+            :root {
+                --vue-green: #41B883;
+                --vue-blue: #35495E;
+                --main-text-color: #fff;
+                --accent-color: #999;
+                --attention: gold;
+                --alternate-text-color: black;
+            }
+
+            body {
+                background: var(--vue-blue);
+                color: var(--main-text-color);
+            }
+
+            .divider {
+                border-top: 2px dashed var(--accent-color);
+            }
+
+            .explanation {
+                background: var(--attention);
+                color: var(--alternate-text-color);
+                padding: 1rem;
+                width: 20rem;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="app">
+            <page-description :descriptions="descriptions" :link="link"></page-description>
+            <report-post v-for="(student,index) in studentData" :key="index" :index="index" :name="student.name"
+                :grade="student.grade" @edit-grade="editMyGrade" />
+        </div>
+        <!-- Import Vue js -->
+        <script src="https://cdn.jsdelivr.net/vue/latest/vue.js"></script>
+
+        <!-- Page Description template -->
+        <script type="text/x-template" id="description-template">
+            <div class="explanation">
+                <h1>EXPLANATION:</h1>
+                <p v-for="description in descriptions">{{ description }}</p>
+                <a :href="link">{{link}}</a>
+            </div>
+        </script>
+
+        <!-- Report Post template -->
+        <script type="text/x-template" id="report-template">
+            <div>
+                <h2>{{ name }}</h2>
+                <p>{{ name }}'s grade is: {{ grade }}</p>
+                <input @keypress.enter="editGrade" v-model="currentGrade">
+                <button @click="editGrade1">Edit Grade</button>
+                <div class="divider"></div>
+            </div>
+        </script>
+        <script>
+            let PageDescription = {
+                template: "#description-template",
+                props: ['link', 'descriptions']
+            }
+
+            let ReportPost = {
+                template: "#report-template",
+                data() {
+                    return {
+                        currentGrade: 0
+                    }
+                },
+                props: {
+                    name: {
+                        type: String,
+                        required: true,
+                        default: 'A Girl Has No Name'
+                    },
+                    grade: {
+                        type: Number,
+                        required: false,
+                        default: 0
+                    },
+                    index: {
+                        type: Number
+                    }
+                },
+                methods: {
+                    editGrade: function () {
+                        this.$emit('edit-grade', {
+                            grade: +this.currentGrade,
+                            index: this.index
+                        })
+                        this.currentGrade = "This is Event Emitter"
+                    },
+                    editGrade1: function () {
+                        this.grade = +this.currentGrade
+                        this.currentGrade = "This is changing the props"
+                    }
+                }
+            }
+
+            new Vue({
+                el: '#app',
+                components: {
+                    pageDescription: PageDescription,
+                    reportPost: ReportPost
+                },
+                data: {
+                    studentData: [{
+                            name: 'Jason Martin',
+                            grade: 100
+                        },
+                        {
+                            name: 'Cersei Lannister',
+                            grade: 88
+                        },
+                        {
+                            grade: 94
+                        },
+                        {
+                            name: 'Joffrey Baratheon'
+                        },
+                        {
+                            name: 'Tyrion Lannister',
+                            grade: 87
+                        },
+                        {
+                            name: 'Arya Stark',
+                            grade: 96
+                        },
+                        {
+                            name: 'Ramsay Bolton'
+                        }
+                    ],
+                    descriptions: [
+                        "This is a simple example on how to use components with Vue.js. I've created a component called 'report' and used it for each item in the studentData array.",
+                        "I also gave an example on how to pass props (data) into a component, how to validate the data and how to have default data in case nothing is passed in.",
+                        "If you want to make your own Vue.js pens, I created a template you can fork here:"
+                    ],
+                    link: "https://codepen.io/jasonamartin/pen/ZJzKve"
+                },
+                methods: {
+                    editMyGrade: function (payLoad) {
+                        console.log(payLoad)
+                        this.studentData[payLoad.index].grade = payLoad.grade
+                    }
+                }
+            })
+        </script>
+    </body>
+
+</html>
